@@ -14,7 +14,8 @@
     "test:watch": "vitest",
     "test:contract": "vitest run contract/src/test",
     "compact:build": "compact compile contract/aegis.compact managed",
-    "compact:build:legacy": "compactc contract/aegis.compact --output managed"
+    "compact:build:legacy": "compactc contract/aegis.compact --output managed",
+    "deploy": "tsx scripts/deploy.ts"
   },
   "dependencies": {
     "next": "14.2.5",
@@ -23,7 +24,7 @@
     "@midnight-ntwrk/midnight-js-contracts": "^0.1.0",
     "@midnight-ntwrk/midnight-js-network-id": "^0.1.0",
     "@midnight-ntwrk/midnight-js-types": "^0.1.0",
-    "@midnight-ntwrk/dapp-connector-api": "^0.1.0"
+    "@midnight-ntwrk/dapp-connector-api": "^1.0.0"
   },
   "devDependencies": {
     "@types/node": "^20",
@@ -36,6 +37,7 @@
     "vitest": "^1.6.0",
     "@vitest/coverage-v8": "^1.6.0",
     "eslint": "^8",
-    "eslint-config-next": "14.2.5"
+    "eslint-config-next": "14.2.5",
+    "tsx": "^4.7.0"
   }
 }
