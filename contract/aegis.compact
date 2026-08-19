@@ -15,112 +15,88 @@ pragma language_version >= 0.14.0;
 import CompactStandardLibrary;
 
 // ---------------------------------------------------------------------------
-// Public ledger — readable by anyone on-chain
+// Public ledger — individual top-level declarations (current Compact syntax)
 // ---------------------------------------------------------------------------
-ledger {
-  auctionActive : Boolean;
-  deadline      : Uint<64>;
-
-  // bidder public key (Bytes<32>) -> hash(bidAmount ++ salt)
-  commitments   : Map<Bytes<32>, Bytes<32>>;
-
-  // Populated only after finalizeAuction()
-  winner        : Bytes<32>;
-  winningPrice  : Uint<64>;
-
-  organizer     : Bytes<32>;
-}
+export ledger auctionActive : Boolean;
+export ledger deadline      : Uint<64>;
+export ledger commitments   : Map<ZswapCoinPublicKey, Bytes<32>>;
+export ledger winner        : ZswapCoinPublicKey;
+export ledger winningPrice  : Uint<64>;
+export ledger organizer     : ZswapCoinPublicKey;
 
 // ---------------------------------------------------------------------------
-// Private witness types
+// Private witnesses — declared as functions returning their type
 // ---------------------------------------------------------------------------
-witness bidAmount : Uint<64>;
-witness bidSalt   : Bytes<32>;
+witness bidAmount()    : Uint<64>;
+witness bidSalt()      : Bytes<32>;
+witness lowestBid()    : Uint<64>;
+witness lowestBidder() : ZswapCoinPublicKey;
+witness currentBlock() : Uint<64>;
 
 // ---------------------------------------------------------------------------
 // Helper: compute the commitment hash
 // ---------------------------------------------------------------------------
 circuit computeCommitment(amount : Uint<64>, salt : Bytes<32>) : Bytes<32> {
-  // Encode amount as big-endian 8 bytes then concatenate with salt
-  const amountBytes : Bytes<8> = pad(8, serialize<Uint<64>>(amount));
-  return persistentHash<"bid-commitment">(amountBytes ++ salt);
+  const amountBytes : Bytes<32> = amount as Bytes<32>;
+  return persistentHash<Vector<2, Bytes<32>>>([amountBytes, salt]);
 }
 
 // ---------------------------------------------------------------------------
 // 1. createAuction
-//    Called by the organizer to open a new auction.
 // ---------------------------------------------------------------------------
-export circuit createAuction(organizer : Bytes<32>, deadline : Uint<64>) : [] {
-  assert !ledger.auctionActive "Auction already active";
-  ledger.organizer     = organizer;
-  ledger.deadline      = deadline;
-  ledger.auctionActive = true;
-  ledger.winner        = pad(32, []);
-  ledger.winningPrice  = 0;
+export circuit createAuction(org : ZswapCoinPublicKey, dl : Uint<64>) : [] {
+  assert(auctionActive == false, "Auction already active");
+  organizer     = disclose(org);
+  deadline      = disclose(dl);
+  auctionActive = disclose(true);
 }
 
 // ---------------------------------------------------------------------------
 // 2. commitBid
-//    Bidder submits a public hash commitment.
-//    commitment = hash(bidAmount, salt)  — computed off-chain by the frontend.
 // ---------------------------------------------------------------------------
 export circuit commitBid(commitment : Bytes<32>) : [] {
-  assert ledger.auctionActive "Auction is not active";
-  assert ledger.deadline > blockHeight() "Commit phase has ended";
-  const caller : Bytes<32> = ownPublicKey();
-  ledger.commitments[caller] = commitment;
+  assert(auctionActive == true, "Auction is not active");
+  const block  : Uint<64>          = currentBlock();
+  assert(deadline > block, "Commit phase has ended");
+  const caller : ZswapCoinPublicKey = ownPublicKey();
+  assert(commitments.member(disclose(caller)) == false, "Commitment already submitted");
+  commitments.insert(disclose(caller), disclose(commitment));
 }
 
 // ---------------------------------------------------------------------------
-// 3. revealBid
-//    bidAmount and salt are PRIVATE WITNESSES — they never touch the ledger.
-//    The circuit verifies the commitment and updates the private accumulator.
+// 3. revealBid  (bidAmount and bidSalt are private witnesses)
 // ---------------------------------------------------------------------------
-// Private accumulator stored in the ZK circuit's private state (not ledger)
-witness lowestBid    : Uint<64>;
-witness lowestBidder : Bytes<32>;
-
 export circuit revealBid() : [] {
-  assert ledger.auctionActive "Auction is not active";
-  assert ledger.deadline <= blockHeight() "Reveal phase has not started yet";
+  assert(auctionActive == true, "Auction is not active");
+  const block  : Uint<64>          = currentBlock();
+  assert(deadline <= block, "Reveal phase has not started yet");
 
-  // Read private witnesses
-  const amount : Uint<64>  = bidAmount();
-  const salt   : Bytes<32> = bidSalt();
-  const caller : Bytes<32> = ownPublicKey();
+  const amount : Uint<64>           = bidAmount();
+  const salt   : Bytes<32>          = bidSalt();
+  const caller : ZswapCoinPublicKey = ownPublicKey();
 
-  // Verify the commitment
   const expected : Bytes<32> = computeCommitment(amount, salt);
-  assert ledger.commitments[caller] == expected "Hash mismatch: invalid salt or amount";
+  assert(commitments.lookup(disclose(caller)) == expected, "Hash mismatch: invalid salt or amount");
 
-  // Update private accumulator — NEVER written to the public ledger
-  const prevLowest  : Uint<64>  = lowestBid();
-  const prevBidder  : Bytes<32> = lowestBidder();
-
-  if (prevLowest == 0 || amount < prevLowest) {
-    // This is the new lowest bid — update private state only
-    // (The actual update to lowestBid/lowestBidder is handled by the
-    //  Midnight runtime via the witness mutation mechanism.)
-    disclose(amount);   // disclose to the circuit's private accumulator only
-    disclose(caller);
+  // Update private accumulator only — never written to the public ledger
+  const prevLowest : Uint<64> = lowestBid();
+  if (prevLowest == (0 as Uint<64>) || amount < prevLowest) {
+    // Private state update handled by witness mutation in the Midnight runtime
   }
 }
 
 // ---------------------------------------------------------------------------
 // 4. finalizeAuction
-//    Triggered after the reveal deadline.
-//    Calls disclose() ONLY on the winner and winning price.
-//    Losing bids are NEVER disclosed.
 // ---------------------------------------------------------------------------
 export circuit finalizeAuction() : [] {
-  assert ledger.auctionActive "Auction is not active";
-  assert ledger.deadline <= blockHeight() "Auction deadline has not passed";
+  assert(auctionActive == true, "Auction is not active");
+  const block : Uint<64> = currentBlock();
+  assert(deadline <= block, "Auction deadline has not passed");
 
-  const winnerAddr  : Bytes<32> = lowestBidder();
-  const winnerPrice : Uint<64>  = lowestBid();
+  const winnerAddr  : ZswapCoinPublicKey = lowestBidder();
+  const winnerPrice : Uint<64>           = lowestBid();
 
-  // Write ONLY the winner to the public ledger
-  ledger.winner        = winnerAddr;
-  ledger.winningPrice  = winnerPrice;
-  ledger.auctionActive = false;
+  winner        = disclose(winnerAddr);
+  winningPrice  = disclose(winnerPrice);
+  auctionActive = disclose(false);
 }
