@@ -20,7 +20,7 @@ const PREPROD_CONFIG = {
   nodeRpc: "https://rpc.preprod.midnight.network",
   indexerUrl: "https://indexer.preprod.midnight.network/api/v1/graphql",
   indexerWsUrl: "wss://indexer.preprod.midnight.network/api/v1/graphql",
-  proofServerUrl: "https://lace-proof-pub.preprod.midnight.network",
+  proofServerUrl: "https://proof-server.preprod.midnight.network",
   faucetUrl: "https://faucet.preprod.midnight.network",
   explorerUrl: "https://explorer.preprod.midnight.network",
 } as const;
