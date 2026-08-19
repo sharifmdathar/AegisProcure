@@ -1,151 +1,95 @@
 /**
- * Aegis Procure — Preprod Deployment Script
+ * Aegis Procure — Preprod Deployment Guide
  *
- * Deploys the compiled aegis.compact contract to Midnight Preprod.
+ * This script documents the deployment steps for Midnight Preprod.
+ * Full programmatic deployment requires the complete Midnight wallet SDK
+ * which must be set up separately (see README below).
  *
- * Usage:
- *   npx tsx scripts/deploy.ts
+ * Quick reference — Preprod endpoints (from midnight-sdk compatibility matrix):
+ *   Node RPC:      https://rpc.preprod.midnight.network
+ *   Indexer:       https://indexer.preprod.midnight.network/api/v1/graphql
+ *   Proof Server:  https://lace-proof-pub.preprod.midnight.network
+ *   Faucet:        https://faucet.preprod.midnight.network
+ *   Explorer:      https://explorer.preprod.midnight.network
  *
- * Prerequisites:
- *   1. Run `npm run compact:build` first — ZK circuits must be in /managed
- *   2. Set environment variables in .env.local (see below)
- *   3. Lace wallet funded with tDUST on Preprod
- *      Faucet: https://faucet.midnight.network
+ * Compatible SDK versions (midnight-sdk COMPATIBILITY.md, updated 2026-04-07):
+ *   @midnight-ntwrk/midnight-js-*  4.0.4
+ *   @midnight-ntwrk/ledger-v8      8.0.3
+ *   Proof Server                   8.0.3
+ *   Indexer                        4.0.0
  *
- * Required env vars (.env.local):
- *   NEXT_PUBLIC_MIDNIGHT_INDEXER_URL   — e.g. https://indexer.preprod.midnight.network/api/v1/graphql
- *   NEXT_PUBLIC_MIDNIGHT_PROOF_SERVER_URL — e.g. https://proof.preprod.midnight.network
- *   DEPLOY_WALLET_SEED                 — your wallet seed phrase (never commit this)
+ * ─────────────────────────────────────────────────────────────────────────────
+ * DEPLOYMENT STEPS
+ * ─────────────────────────────────────────────────────────────────────────────
+ *
+ * 1. COMPILE THE CONTRACT
+ *    npm run compact:build
+ *    → ZK circuits output to /managed
+ *
+ * 2. FUND YOUR WALLET
+ *    Get tDUST from the Preprod faucet:
+ *    https://faucet.preprod.midnight.network
+ *
+ * 3. FOLLOW THE OFFICIAL EXAMPLE
+ *    The Midnight team maintains a reference deployment example:
+ *    https://github.com/midnightntwrk/example-counter
+ *
+ *    Clone it, study the deployment pattern, then adapt it for aegis.compact:
+ *      git clone https://github.com/midnightntwrk/example-counter
+ *      cd example-counter && npm install && npm run deploy
+ *
+ * 4. ADAPT FOR AEGIS PROCURE
+ *    Replace the counter contract with the aegis contract artifacts from /managed.
+ *    The initial private state for Aegis Procure is:
+ *      { lowestBid: 0n, lowestBidder: "0".repeat(64) }
+ *
+ * 5. UPDATE CONFIG AFTER DEPLOYMENT
+ *    Once you have the contract address, update:
+ *      - README.md  → Contract Address table
+ *      - .env.local → NEXT_PUBLIC_CONTRACT_ADDRESS=<address>
  */
 
-import { deployContract, findDeployedContract } from "@midnight-ntwrk/midnight-js-contracts";
 import { setNetworkId } from "@midnight-ntwrk/midnight-js-network-id";
-import { FetchZkConfigProvider } from "@midnight-ntwrk/midnight-js-fetch-zk-config-provider";
-import { httpClientProofProvider } from "@midnight-ntwrk/midnight-js-http-client-proof-provider";
-import { indexerPublicDataProvider } from "@midnight-ntwrk/midnight-js-indexer-public-data-provider";
-import { levelPrivateStateProvider } from "@midnight-ntwrk/midnight-js-level-private-state-provider";
-import type { MidnightProviders } from "@midnight-ntwrk/midnight-js-types";
 
-// ---------------------------------------------------------------------------
-// Load environment
-// ---------------------------------------------------------------------------
-const INDEXER_URL =
-  process.env.NEXT_PUBLIC_MIDNIGHT_INDEXER_URL ??
-  "https://indexer.preprod.midnight.network/api/v1/graphql";
+// Preprod network configuration
+export const PREPROD_CONFIG = {
+  networkId: "testnet" as const,
+  nodeRpc: "https://rpc.preprod.midnight.network",
+  indexerUrl: "https://indexer.preprod.midnight.network/api/v1/graphql",
+  indexerWsUrl: "wss://indexer.preprod.midnight.network/api/v1/graphql",
+  proofServerUrl: "https://lace-proof-pub.preprod.midnight.network",
+  faucetUrl: "https://faucet.preprod.midnight.network",
+  explorerUrl: "https://explorer.preprod.midnight.network",
+} as const;
 
-const PROOF_SERVER_URL =
-  process.env.NEXT_PUBLIC_MIDNIGHT_PROOF_SERVER_URL ??
-  "https://proof.preprod.midnight.network";
+// Initial private state for the Aegis Procure contract
+export const INITIAL_PRIVATE_STATE = {
+  lowestBid: 0n,
+  lowestBidder: "0".repeat(64),
+} as const;
 
-const NETWORK: "testnet" | "mainnet" = "testnet"; // Preprod = testnet
-
-// ---------------------------------------------------------------------------
-// Main
-// ---------------------------------------------------------------------------
 async function main() {
+  setNetworkId(PREPROD_CONFIG.networkId);
+
   console.log("🔒 Aegis Procure — Preprod Deployment");
   console.log("======================================");
-  console.log(`Network:      ${NETWORK} (Preprod)`);
-  console.log(`Indexer:      ${INDEXER_URL}`);
-  console.log(`Proof server: ${PROOF_SERVER_URL}`);
   console.log("");
-
-  // 1. Set network ID
-  setNetworkId(NETWORK);
-  console.log("✓ Network ID set to testnet (Preprod)");
-
-  // 2. Import compiled contract artifacts from /managed
-  //    (generated by `npm run compact:build`)
-  let contract: unknown;
-  try {
-    // The Compact compiler outputs a JS module at managed/contract/index.cjs
-    // Adjust the path if your compact output differs
-    contract = await import("../managed/contract/index.cjs");
-    console.log("✓ Compiled contract artifacts loaded from /managed");
-  } catch (err) {
-    console.error(
-      "✗ Could not load compiled contract. Run `npm run compact:build` first."
-    );
-    console.error(err);
-    process.exit(1);
-  }
-
-  // 3. Build providers
-  const zkConfigProvider = new FetchZkConfigProvider(
-    `${PROOF_SERVER_URL}/zk-config`
-  );
-
-  const proofProvider = httpClientProofProvider(
-    PROOF_SERVER_URL,
-    zkConfigProvider
-  );
-
-  const publicDataProvider = indexerPublicDataProvider(
-    INDEXER_URL,
-    INDEXER_URL.replace("https://", "wss://").replace("http://", "ws://")
-  );
-
-  const privateStateProvider = levelPrivateStateProvider({
-    privateStoragePasswordProvider: () =>
-      process.env.PRIVATE_STATE_PASSWORD ?? "aegis-procure-dev",
-    accountId: "aegis-procure-deployer",
-  });
-
-  // NOTE: In a real deployment you would wire in a wallet provider here.
-  // For CLI deployment, use @midnight-ntwrk/midnight-js-wallet or
-  // the Lace DApp Connector if deploying from a browser context.
-  // See: https://github.com/midnightntwrk/example-counter
-  const providers = {
-    privateStateProvider,
-    publicDataProvider,
-    zkConfigProvider,
-    proofProvider,
-    // walletProvider and midnightProvider must be supplied for a real deployment
-    // walletProvider: ...,
-    // midnightProvider: ...,
-  } as unknown as MidnightProviders;
-
-  console.log("✓ Providers configured");
-
-  // 4. Deploy
-  console.log("\nDeploying contract to Midnight Preprod...");
-  console.log("(This may take 30–60 seconds while the ZK proof is generated)");
-
-  try {
-    const deployed = await deployContract(providers, {
-      // @ts-expect-error — contract shape depends on Compact compiler output
-      compiledContract: contract,
-      privateStateId: "aegis-procure-private-state",
-      initialPrivateState: {
-        lowestBid: 0n,
-        lowestBidder: "0".repeat(64),
-      },
-    });
-
-    const contractAddress = deployed.deployTxData.public.contractAddress;
-
-    console.log("\n✅ Contract deployed successfully!");
-    console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
-    console.log(`Contract Address: ${contractAddress}`);
-    console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
-    console.log("\nNext steps:");
-    console.log(`  1. Update README.md → Contract Address table with: ${contractAddress}`);
-    console.log(`  2. Update .env.local → NEXT_PUBLIC_CONTRACT_ADDRESS=${contractAddress}`);
-    console.log(
-      `  3. View on explorer: https://explorer.preprod.midnight.network/contract/${contractAddress}`
-    );
-  } catch (err) {
-    console.error("\n✗ Deployment failed:");
-    console.error(err);
-    console.error("\nCommon causes:");
-    console.error("  - Wallet not funded with tDUST (faucet: https://faucet.midnight.network)");
-    console.error("  - Proof server unreachable");
-    console.error("  - walletProvider / midnightProvider not wired in (see script comments)");
-    process.exit(1);
-  }
+  console.log("Preprod endpoints:");
+  console.log(`  Node RPC:     ${PREPROD_CONFIG.nodeRpc}`);
+  console.log(`  Indexer:      ${PREPROD_CONFIG.indexerUrl}`);
+  console.log(`  Proof Server: ${PREPROD_CONFIG.proofServerUrl}`);
+  console.log(`  Faucet:       ${PREPROD_CONFIG.faucetUrl}`);
+  console.log(`  Explorer:     ${PREPROD_CONFIG.explorerUrl}`);
+  console.log("");
+  console.log("SDK versions (midnight-sdk compatibility matrix 2026-04-07):");
+  console.log("  @midnight-ntwrk/midnight-js-*  4.0.4");
+  console.log("  @midnight-ntwrk/ledger-v8      8.0.3");
+  console.log("");
+  console.log("To deploy:");
+  console.log("  1. npm run compact:build");
+  console.log("  2. Fund wallet at: https://faucet.preprod.midnight.network");
+  console.log("  3. Follow: https://github.com/midnightntwrk/example-counter");
+  console.log("  4. Adapt with /managed artifacts and INITIAL_PRIVATE_STATE above");
 }
 
-main().catch((err) => {
-  console.error(err);
-  process.exit(1);
-});
+main().catch(console.error);
