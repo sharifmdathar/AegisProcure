@@ -13,7 +13,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:contract": "vitest run contract/src/test",
-    "compact:build": "compact compile contract/aegis.compact managed"
+    "compact:build": "compact compile contract/aegis.compact managed",
+    "compact:build:legacy": "compactc contract/aegis.compact --output managed"
   },
   "dependencies": {
     "next": "14.2.5",
