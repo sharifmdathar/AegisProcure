@@ -1,0 +1,326 @@
+{
+  "info": {
+    "_postman_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    "name": "Aegis Procure",
+    "description": "ZK Sealed-Bid Reverse Auction Protocol on Midnight Blockchain — Commit-Reveal auction with ZK private witnesses.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Auction Lifecycle",
+      "id": "f1e2d3c4-b5a6-7890-1234-abcdef567890",
+      "item": [
+        {
+          "name": "createAuction",
+          "id": "11111111-aaaa-bbbb-cccc-dddddddddddd",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"organizer\": \"{{organizerKey}}\",\n  \"deadline\": \"{{auctionDeadline}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/contract/createAuction",
+              "host": ["{{baseUrl}}"],
+              "path": ["contract", "createAuction"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"createAuction sets correct deadline\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json).to.have.property(\"auctionActive\", true);",
+                  "    pm.expect(json).to.have.property(\"deadline\");",
+                  "    pm.expect(json.deadline).to.eql(pm.environment.get(\"auctionDeadline\"));",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "commitBid",
+          "id": "22222222-aaaa-bbbb-cccc-dddddddddddd",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"commitment\": \"{{bidCommitment}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/contract/commitBid",
+              "host": ["{{baseUrl}}"],
+              "path": ["contract", "commitBid"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"commitBid stores correct hash\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json).to.have.property(\"commitment\");",
+                  "    pm.expect(json.commitment).to.eql(pm.environment.get(\"bidCommitment\"));",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "revealBid (valid salt)",
+          "id": "33333333-aaaa-bbbb-cccc-dddddddddddd",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"bidAmount\": \"{{bidAmount}}\",\n  \"salt\": \"{{bidSalt}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/contract/revealBid",
+              "host": ["{{baseUrl}}"],
+              "path": ["contract", "revealBid"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"revealBid succeeds with correct salt\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json).to.have.property(\"success\", true);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "revealBid (invalid salt)",
+          "id": "44444444-aaaa-bbbb-cccc-dddddddddddd",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"bidAmount\": \"{{bidAmount}}\",\n  \"salt\": \"INVALIDSALT\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/contract/revealBid",
+              "host": ["{{baseUrl}}"],
+              "path": ["contract", "revealBid"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"revealBid FAILS with incorrect salt (hash mismatch)\", function () {",
+                  "    pm.response.to.not.have.status(200);",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json).to.have.property(\"error\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "revealBid (after deadline)",
+          "id": "55555555-aaaa-bbbb-cccc-dddddddddddd",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"bidAmount\": \"{{bidAmount}}\",\n  \"salt\": \"{{bidSalt}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/contract/revealBid",
+              "host": ["{{baseUrl}}"],
+              "path": ["contract", "revealBid"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"revealBid FAILS after deadline\", function () {",
+                  "    pm.response.to.not.have.status(200);",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json).to.have.property(\"error\");",
+                  "    pm.expect(json.error).to.include(\"deadline\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "finalizeAuction",
+          "id": "66666666-aaaa-bbbb-cccc-dddddddddddd",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/contract/finalizeAuction",
+              "host": ["{{baseUrl}}"],
+              "path": ["contract", "finalizeAuction"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"finalizeAuction correctly discloses the minimum bid and winner\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json).to.have.property(\"winner\");",
+                  "    pm.expect(json).to.have.property(\"winningPrice\");",
+                  "    pm.expect(json.winner).to.not.be.empty;",
+                  "    pm.expect(json.winningPrice).to.be.a(\"number\");",
+                  "    // Ensure losing bids are NOT disclosed",
+                  "    pm.expect(json).to.not.have.property(\"allBids\");",
+                  "    pm.expect(json).to.not.have.property(\"losingBids\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Queries",
+      "id": "77777777-aaaa-bbbb-cccc-dddddddddddd",
+      "item": [
+        {
+          "name": "getAuctionState",
+          "id": "88888888-aaaa-bbbb-cccc-dddddddddddd",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/contract/state",
+              "host": ["{{baseUrl}}"],
+              "path": ["contract", "state"]
+            }
+          }
+        },
+        {
+          "name": "getWinner",
+          "id": "99999999-aaaa-bbbb-cccc-dddddddddddd",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/contract/winner",
+              "host": ["{{baseUrl}}"],
+              "path": ["contract", "winner"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Tests",
+      "id": "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee",
+      "item": []
+    }
+  ],
+  "variable": []
+}
