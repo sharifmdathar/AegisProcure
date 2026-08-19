@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "build": "compactc aegis.compact --output ../managed",
+    "build": "compact compile aegis.compact ../managed",
     "test": "vitest run src/test"
   },
   "devDependencies": {
