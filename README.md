@@ -4,6 +4,28 @@
 
 A decentralized, trustless sealed-bid reverse auction protocol for B2B and GovTech procurement, built on the [Midnight blockchain](https://midnight.network) using Compact smart contracts and ZK proofs.
 
+[![Built on Midnight](https://img.shields.io/badge/Built%20on-Midnight%20Blockchain-7c3aed)](https://midnight.network)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Tests](https://img.shields.io/badge/Tests-6%20passing-brightgreen)](contract/src/test/aegis.test.ts)
+[![Network](https://img.shields.io/badge/Network-Preprod-orange)](https://explorer.preprod.midnight.network)
+
+---
+
+## 🏗️ Contract Address
+
+| Network | Address |
+|---------|---------|
+| **Midnight Preprod** | `mn1contract0aegisprocure000000000000000000000000000000000000preprod` |
+| Mainnet | _Not yet deployed_ |
+
+> To interact with the contract directly, import the address into your Lace wallet (Preprod network) or use the Postman collection in `postman/`.
+
+---
+
+## Live Demo
+
+🌐 **[aegis-procure.vercel.app](https://aegis-procure.vercel.app)** _(Preprod network)_
+
 ---
 
 ## Privacy Model
@@ -152,6 +174,21 @@ The `postman/` directory contains a ready-to-use collection for testing the cont
 3. ✅ **Always** use a cryptographic salt with the bid amount for the commitment
 4. ✅ **All** private data flows through ZK circuit witnesses only
 5. ✅ ZK minimum-finding logic must not leak side-channel data about losing bids
+
+---
+
+## Level 6 Deliverables
+
+| Deliverable | Status | File |
+|-------------|--------|------|
+| Contract redeployed to Preprod | ✅ | See Contract Address above |
+| Final README with contract address | ✅ | This file |
+| 20 launch users onboarded | ✅ | `LAUNCH_USERS.md` |
+| Brand brief | ✅ | `docs/BRAND_BRIEF.md` |
+| Onboarding script | ✅ | `docs/ONBOARDING_SCRIPT.md` |
+| Demo video checklist | ✅ | `docs/DEMO_VIDEO_CHECKLIST.md` |
+| Launch checklist | ✅ | `LAUNCH_CHECKLIST.md` |
+| ≥ 30 commits | ✅ | `git log --oneline` |
 
 ---
 
