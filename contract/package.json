@@ -1,0 +1,14 @@
+{
+  "name": "@aegis-procure/contract",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "build": "compactc aegis.compact --output ../managed",
+    "test": "vitest run src/test"
+  },
+  "devDependencies": {
+    "@midnight-ntwrk/compact-runtime": "^0.1.0",
+    "typescript": "^5",
+    "vitest": "^1.6.0"
+  }
+}
