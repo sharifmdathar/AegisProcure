@@ -15,7 +15,7 @@ Aegis Procure is a ZK sealed-bid reverse auction protocol on the Midnight blockc
 | Requirement | Details |
 |-------------|---------|
 | Browser | Chrome or Brave (Lace extension supported) |
-| Wallet | [Lace](https://www.lace.io/) — switch to **Preprod** network |
+| Wallet | [Lace](https://www.lace.io/) — switch to **Preview** network |
 | tDUST | Get test tokens from the [Midnight faucet](https://faucet.midnight.network) |
 | Node.js | ≥ 22 (for local development only) |
 
@@ -25,7 +25,7 @@ Aegis Procure is a ZK sealed-bid reverse auction protocol on the Midnight blockc
 
 ### Step 1 — Connect your Lace wallet
 1. Install the [Lace browser extension](https://www.lace.io/)
-2. Open Lace → Settings → Network → select **Preprod**
+2. Open Lace → Settings → Network → select **Preview**
 3. Navigate to `https://aegis-procure.vercel.app`
 4. Click **Connect Wallet** — approve the DApp Connector prompt
 
@@ -101,7 +101,7 @@ Finalize:       winner, winningPrice   →  public ledger  ✅
 | "Commit phase has ended" | The deadline passed — you can no longer commit |
 | "Hash mismatch: invalid salt or amount" | You entered the wrong salt or bid amount during reveal |
 | "Reveal phase has not started yet" | The commit deadline has not passed yet |
-| Transaction stuck | Check the [Midnight Preprod explorer](https://explorer.preprod.midnight.network) for tx status |
+| Transaction stuck | Check the [Midnight Preview explorer](https://explorer.preview.midnight.network) for tx status |
 | Lost your salt | Unfortunately the bid cannot be revealed — always save your salt |
 
 ---

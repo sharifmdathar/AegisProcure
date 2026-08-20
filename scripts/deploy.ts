@@ -1,5 +1,5 @@
 /**
- * Aegis Procure — Preprod Deployment Reference
+ * Aegis Procure — Preview Deployment Reference
  *
  * Run:  npx tsx scripts/deploy.ts
  *
@@ -15,14 +15,14 @@
 // @midnight-ntwrk/ledger as a peer dep which must be installed
 // as part of the full wallet SDK setup (see example-counter).
 
-const PREPROD_CONFIG = {
-  networkId: "testnet",
-  nodeRpc: "https://rpc.preprod.midnight.network",
-  indexerUrl: "https://indexer.preprod.midnight.network/api/v1/graphql",
-  indexerWsUrl: "wss://indexer.preprod.midnight.network/api/v1/graphql",
-  proofServerUrl: "https://proof-server.preprod.midnight.network",
-  faucetUrl: "https://faucet.preprod.midnight.network",
-  explorerUrl: "https://explorer.preprod.midnight.network",
+const PREVIEW_CONFIG = {
+  networkId: "preview",
+  nodeRpc: "https://rpc.preview.midnight.network",
+  indexerUrl: "https://indexer.preview.midnight.network/api/v3/graphql",
+  indexerWsUrl: "wss://indexer.preview.midnight.network/api/v3/graphql/ws",
+  proofServerUrl: "https://proof-server.preview.midnight.network",
+  faucetUrl: "https://faucet.preview.midnight.network",
+  explorerUrl: "https://explorer.preview.midnight.network",
 } as const;
 
 const WALLET_ADDRESS = process.env.WALLET_ADDRESS ?? "(set WALLET_ADDRESS env var)";
@@ -34,16 +34,16 @@ const INITIAL_PRIVATE_STATE = {
 
 function main() {
   console.log("");
-  console.log("🔒 Aegis Procure — Preprod Deployment Config");
+  console.log("🔒 Aegis Procure — Preview Deployment Config");
   console.log("═══════════════════════════════════════════════════════════");
   console.log("");
-  console.log("📡 Preprod endpoints:");
-  console.log(`   Node RPC:     ${PREPROD_CONFIG.nodeRpc}`);
-  console.log(`   Indexer:      ${PREPROD_CONFIG.indexerUrl}`);
-  console.log(`   Indexer WS:   ${PREPROD_CONFIG.indexerWsUrl}`);
-  console.log(`   Proof Server: ${PREPROD_CONFIG.proofServerUrl}`);
-  console.log(`   Explorer:     ${PREPROD_CONFIG.explorerUrl}`);
-  console.log(`   Faucet:       ${PREPROD_CONFIG.faucetUrl}`);
+  console.log("📡 Preview endpoints:");
+  console.log(`   Node RPC:     ${PREVIEW_CONFIG.nodeRpc}`);
+  console.log(`   Indexer:      ${PREVIEW_CONFIG.indexerUrl}`);
+  console.log(`   Indexer WS:   ${PREVIEW_CONFIG.indexerWsUrl}`);
+  console.log(`   Proof Server: ${PREVIEW_CONFIG.proofServerUrl}`);
+  console.log(`   Explorer:     ${PREVIEW_CONFIG.explorerUrl}`);
+  console.log(`   Faucet:       ${PREVIEW_CONFIG.faucetUrl}`);
   console.log("");
   console.log("💼 Wallet:");
   console.log(`   Address: ${WALLET_ADDRESS}`);
@@ -62,7 +62,7 @@ function main() {
   console.log("      → ZK circuits compiled to /managed");
   console.log("");
   console.log("   2. Get tDUST:");
-  console.log(`      ${PREPROD_CONFIG.faucetUrl}`);
+  console.log(`      ${PREVIEW_CONFIG.faucetUrl}`);
   console.log("");
   console.log("   3. Clone the official deployment example:");
   console.log("      git clone https://github.com/midnightntwrk/example-counter");
@@ -76,7 +76,7 @@ function main() {
   console.log("      .env.local → NEXT_PUBLIC_CONTRACT_ADDRESS=<address>");
   console.log("");
   console.log("🔍 After deployment, verify at:");
-  console.log(`   ${PREPROD_CONFIG.explorerUrl}`);
+  console.log(`   ${PREVIEW_CONFIG.explorerUrl}`);
   console.log("");
   console.log("═══════════════════════════════════════════════════════════");
 }

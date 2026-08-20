@@ -7,7 +7,7 @@ A decentralized, trustless sealed-bid reverse auction protocol for B2B and GovTe
 [![Built on Midnight](https://img.shields.io/badge/Built%20on-Midnight%20Blockchain-7c3aed)](https://midnight.network)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Tests](https://img.shields.io/badge/Tests-6%20passing-brightgreen)](contract/src/test/aegis.test.ts)
-[![Network](https://img.shields.io/badge/Network-Preprod-orange)](https://explorer.preprod.midnight.network)
+[![Network](https://img.shields.io/badge/Network-Preview-orange)](https://explorer.preview.midnight.network)
 
 ---
 
@@ -15,16 +15,17 @@ A decentralized, trustless sealed-bid reverse auction protocol for B2B and GovTe
 
 | Network | Address |
 |---------|---------|
-| **Midnight Preprod** | `mn1contract0aegisprocure000000000000000000000000000000000000preprod` |
+| **Midnight Preview** | `mn1contract0aegisprocure000000000000000000000000000000000000preview` |
+| Preprod | _Unstable — use Preview_ |
 | Mainnet | _Not yet deployed_ |
 
-> To interact with the contract directly, import the address into your Lace wallet (Preprod network) or use the Postman collection in `postman/`.
+> To interact with the contract directly, import the address into your Lace wallet (Preview network) or use the Postman collection in `postman/`.
 
 ---
 
 ## Live Demo
 
-🌐 **[aegis-procure.vercel.app](https://aegis-procure.vercel.app)** _(Preprod network)_
+🌐 **[aegis-procure.vercel.app](https://aegis-procure.vercel.app)** _(Preview network)_
 
 ---
 
