@@ -42,3 +42,13 @@ The core privacy invariants were not affected by any of the above changes:
 - Raw bid amounts are still never written to the public ledger
 - `disclose()` is still called only on the winner and winning price
 - All bid data still flows through ZK circuit witnesses only
+
+---
+
+## Level 6 Improvements
+
+| Change | User Feedback That Triggered It | Status |
+|--------|--------------------------------|--------|
+| Redeployed contract to Preprod for a stable public testnet | Users on Level 5 reported the Preview endpoint was unstable | Done |
+| Clarified privacy model (PUBLIC / PRIVATE / PROVES) in README & USAGE | Testers were unsure what data was on-chain vs private | Done |
+| Added CI pipeline running the contract test suite on every push | Contributors wanted confidence tests pass before merge | Done |

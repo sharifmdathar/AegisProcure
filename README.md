@@ -4,10 +4,11 @@
 
 A decentralized, trustless sealed-bid reverse auction protocol for B2B and GovTech procurement, built on the [Midnight blockchain](https://midnight.network) using Compact smart contracts and ZK proofs.
 
+[![CI](https://github.com/<<GITHUB_OWNER_REPO>>/actions/workflows/ci.yml/badge.svg)](https://github.com/<<GITHUB_OWNER_REPO>>/actions/workflows/ci.yml)
 [![Built on Midnight](https://img.shields.io/badge/Built%20on-Midnight%20Blockchain-7c3aed)](https://midnight.network)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Tests](https://img.shields.io/badge/Tests-6%20passing-brightgreen)](contract/src/test/aegis.test.ts)
-[![Network](https://img.shields.io/badge/Network-Preview-orange)](https://explorer.preview.midnight.network)
+[![Network](https://img.shields.io/badge/Network-Preprod-orange)](https://explorer.preprod.midnight.network)
 
 ---
 
@@ -15,17 +16,25 @@ A decentralized, trustless sealed-bid reverse auction protocol for B2B and GovTe
 
 | Network | Address |
 |---------|---------|
-| **Midnight Preview** | `mn1contract0aegisprocure000000000000000000000000000000000000preview` |
-| Preprod | _Unstable — use Preview_ |
+| **Midnight Preprod** (primary) | `<<PREPROD_CONTRACT_ADDRESS>>` |
+| Preview | `mn1contract0aegisprocure000000000000000000000000000000000000preview` |
 | Mainnet | _Not yet deployed_ |
 
-> To interact with the contract directly, import the address into your Lace wallet (Preview network) or use the Postman collection in `postman/`.
+> To interact with the contract directly, import the address into your Lace wallet (Preprod network) or use the Postman collection in `postman/`.
+
+---
+
+## What This Product Does
+
+Aegis Procure is a trustless sealed-bid reverse auction protocol built for B2B and GovTech procurement. Suppliers submit sealed bids so that no one — not competitors, not even the auction organizer — can see or front-run competing bids while the auction is open. This removes the bid-shading and collusion that plague traditional procurement.
+
+Only the winning bid is revealed on-chain when the auction is finalized. Every losing bid stays permanently private, protected by zero-knowledge proofs on the Midnight blockchain, so participants get mathematically guaranteed fairness without exposing their commercial secrets.
 
 ---
 
 ## Live Demo
 
-🌐 **[aegis-procure.vercel.app](https://aegis-procure.vercel.app)** _(Preview network)_
+🌐 **[aegis-procure.vercel.app](https://aegis-procure.vercel.app)** _(Preprod network)_
 
 ---
 
@@ -38,6 +47,12 @@ Aegis Procure implements a **commit-reveal auction with ZK private witnesses**:
 | **1 — Commit** | Bidder submits `hash(bidAmount, salt)` | Commitment hash only |
 | **2 — Reveal** | Bidder submits `bidAmount` + `salt` as **private ZK witnesses** | Nothing — circuit verifies internally |
 | **3 — Finalize** | `disclose()` called on winner only | Winner address + winning price |
+
+**What is exposed vs. protected:**
+
+- **PUBLIC (on-chain):** auction status, deadline, commitment hashes, winner address, winning price.
+- **PRIVATE (never on-chain):** raw bid amounts, salts, losing bidders' amounts.
+- **PROVES (ZK circuit):** that the revealed winner truly submitted the lowest valid sealed bid — without exposing any losing bid.
 
 **Losing bids are permanently private.** Raw bid amounts never touch the public ledger.
 
@@ -95,8 +110,8 @@ aegis-procure/
 
 ### Prerequisites
 
-- Node.js ≥ 22
-- [Lace wallet](https://www.lace.io/) browser extension (Preprod network)
+- Node.js v22
+- Lace wallet (Preprod network) browser extension — [Lace](https://www.lace.io/)
 - Midnight Compact compiler (`compactc`) — see [Midnight docs](https://docs.midnight.network)
 
 ### Install
@@ -168,6 +183,32 @@ The `postman/` directory contains a ready-to-use collection for testing the cont
 
 ---
 
+## CI/CD
+
+Continuous integration runs via GitHub Actions, defined in [`.github/workflows/ci.yml`](.github/workflows/ci.yml). The workflow triggers on every push and pull request to `main`, installs dependencies deterministically with `npm ci`, and runs the contract test suite with `npm test` on Node 22.
+
+---
+
+## Product X Profile
+
+[Follow @AegisProcure on X](<<X_PROFILE_URL>>)
+
+> Trustless procurement on @MidnightNtwrk. Sealed-bid reverse auctions with zero bid leakage, powered by ZK proofs. 🔒
+
+---
+
+## Brand Assets
+
+Brand direction and guidelines live in [`docs/BRAND_BRIEF.md`](docs/BRAND_BRIEF.md). Asset checklist:
+
+- [ ] Logo
+- [ ] Favicon
+- [ ] OG image (1200×630)
+- [ ] X banner (1500×500)
+- [ ] Demo thumbnail
+
+---
+
 ## Hard Constraints
 
 1. ❌ **Never** store raw bid amounts in the public `ledger {}` state
@@ -182,14 +223,15 @@ The `postman/` directory contains a ready-to-use collection for testing the cont
 
 | Deliverable | Status | File |
 |-------------|--------|------|
-| Contract redeployed to Preprod | ✅ | See Contract Address above |
-| Final README with contract address | ✅ | This file |
-| 20 launch users onboarded | ✅ | `LAUNCH_USERS.md` |
-| Brand brief | ✅ | `docs/BRAND_BRIEF.md` |
-| Onboarding script | ✅ | `docs/ONBOARDING_SCRIPT.md` |
-| Demo video checklist | ✅ | `docs/DEMO_VIDEO_CHECKLIST.md` |
-| Launch checklist | ✅ | `LAUNCH_CHECKLIST.md` |
-| ≥ 30 commits | ✅ | `git log --oneline` |
+| Docs (USAGE, FEEDBACK, PROPOSAL, USERS, LAUNCH_USERS) | ✅ Done | `docs/USAGE.md`, `FEEDBACK.md`, `PROPOSAL.md`, `USERS.md`, `LAUNCH_USERS.md` |
+| CI workflow | ✅ Done | `.github/workflows/ci.yml` |
+| README sections | ✅ Done | This file |
+| Brand brief | ✅ Done | `docs/BRAND_BRIEF.md` |
+| Onboarding script | ✅ Done | `docs/ONBOARDING_SCRIPT.md` |
+| Demo checklist | ✅ Done | `docs/DEMO_VIDEO_CHECKLIST.md` |
+| Contract redeployed to Preprod | ⏳ Pending | Needs real value — see `<<PREPROD_CONTRACT_ADDRESS>>` |
+| Preprod contract address in README | ⏳ Pending | Needs real value — see `<<PREPROD_CONTRACT_ADDRESS>>` |
+| 20 users onboarded | ⏳ Pending | Needs real values — see `LAUNCH_USERS.md` |
 
 ---
 

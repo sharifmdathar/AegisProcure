@@ -15,9 +15,30 @@ Aegis Procure is a ZK sealed-bid reverse auction protocol on the Midnight blockc
 | Requirement | Details |
 |-------------|---------|
 | Browser | Chrome or Brave (Lace extension supported) |
-| Wallet | [Lace](https://www.lace.io/) — switch to **Preview** network |
-| tDUST | Get test tokens from the [Midnight faucet](https://faucet.midnight.network) |
+| Wallet | [Lace](https://www.lace.io/) — switch to **Preprod** network |
+| tDUST | Get test tokens from the [Midnight Preprod faucet](https://faucet.preprod.midnight.network) |
 | Node.js | ≥ 22 (for local development only) |
+
+---
+
+## Getting Started on Preprod
+
+1. Install the Lace wallet browser extension.
+2. Open Lace settings and switch the network to **Preprod**.
+3. Get free test tDUST from the Preprod faucet: https://faucet.preprod.midnight.network
+4. Import / point to the Aegis Procure contract address: `<<PREPROD_CONTRACT_ADDRESS>>`
+5. Open the live demo and connect your Lace (Preprod) wallet.
+
+---
+
+## Your First Transaction
+
+1. Connect your Lace (Preprod) wallet on the demo site.
+2. (Organizer) Create an auction: set the item and a bidding deadline, then confirm the transaction in Lace.
+3. (Bidder) Commit a sealed bid: enter your bid amount + a secret salt; the app submits only `hash(amount, salt)` on-chain.
+4. (Bidder) Reveal your bid after the deadline: the app submits your amount + salt as private ZK witnesses — the raw amount never hits the ledger.
+5. (Organizer) Finalize: the winner and winning price are disclosed on-chain; all losing bids stay permanently private.
+6. Verify the result on the Preprod explorer: https://explorer.preprod.midnight.network
 
 ---
 
@@ -25,7 +46,7 @@ Aegis Procure is a ZK sealed-bid reverse auction protocol on the Midnight blockc
 
 ### Step 1 — Connect your Lace wallet
 1. Install the [Lace browser extension](https://www.lace.io/)
-2. Open Lace → Settings → Network → select **Preview**
+2. Open Lace → Settings → Network → select **Preprod**
 3. Navigate to `https://aegis-procure.vercel.app`
 4. Click **Connect Wallet** — approve the DApp Connector prompt
 
@@ -101,7 +122,7 @@ Finalize:       winner, winningPrice   →  public ledger  ✅
 | "Commit phase has ended" | The deadline passed — you can no longer commit |
 | "Hash mismatch: invalid salt or amount" | You entered the wrong salt or bid amount during reveal |
 | "Reveal phase has not started yet" | The commit deadline has not passed yet |
-| Transaction stuck | Check the [Midnight Preview explorer](https://explorer.preview.midnight.network) for tx status |
+| Transaction stuck | Check the [Midnight Preprod explorer](https://explorer.preprod.midnight.network) for tx status |
 | Lost your salt | Unfortunately the bid cannot be revealed — always save your salt |
 
 ---

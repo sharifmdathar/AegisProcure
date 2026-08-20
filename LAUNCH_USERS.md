@@ -1,51 +1,30 @@
-# Aegis Procure — Launch Users
+# Level 6 Users — Preprod
 
-Target: 20 wallet addresses for the Midnight Preprod launch cohort.
+Target: 20 verified wallet addresses
 
-These are the first users invited to test Aegis Procure on the Midnight Preprod network.
-Each address has been issued test tDUST from the Midnight faucet.
+| # | Wallet Address | Date Onboarded |
+|---|----------------|----------------|
+| 1 | <<PREPROD_USER_WALLET_1>> | <<DATE>> |
+| 2 | <<PREPROD_USER_WALLET_2>> | <<DATE>> |
+| 3 | <<PREPROD_USER_WALLET_3>> | <<DATE>> |
+| 4 | <<PREPROD_USER_WALLET_4>> | <<DATE>> |
+| 5 | <<PREPROD_USER_WALLET_5>> | <<DATE>> |
+| 6 | <<PREPROD_USER_WALLET_6>> | <<DATE>> |
+| 7 | <<PREPROD_USER_WALLET_7>> | <<DATE>> |
+| 8 | <<PREPROD_USER_WALLET_8>> | <<DATE>> |
+| 9 | <<PREPROD_USER_WALLET_9>> | <<DATE>> |
+| 10 | <<PREPROD_USER_WALLET_10>> | <<DATE>> |
+| 11 | <<PREPROD_USER_WALLET_11>> | <<DATE>> |
+| 12 | <<PREPROD_USER_WALLET_12>> | <<DATE>> |
+| 13 | <<PREPROD_USER_WALLET_13>> | <<DATE>> |
+| 14 | <<PREPROD_USER_WALLET_14>> | <<DATE>> |
+| 15 | <<PREPROD_USER_WALLET_15>> | <<DATE>> |
+| 16 | <<PREPROD_USER_WALLET_16>> | <<DATE>> |
+| 17 | <<PREPROD_USER_WALLET_17>> | <<DATE>> |
+| 18 | <<PREPROD_USER_WALLET_18>> | <<DATE>> |
+| 19 | <<PREPROD_USER_WALLET_19>> | <<DATE>> |
+| 20 | <<PREPROD_USER_WALLET_20>> | <<DATE>> |
 
----
+Current count: 0 / 20
 
-## Launch Cohort — 20 Addresses
-
-| # | Wallet Address (Preprod) | Role | Status |
-|---|--------------------------|------|--------|
-| 1  | `mn1qpreprod0000000000000000000000000000000000000000000000000001` | Organizer | Invited |
-| 2  | `mn1qpreprod0000000000000000000000000000000000000000000000000002` | Bidder | Invited |
-| 3  | `mn1qpreprod0000000000000000000000000000000000000000000000000003` | Bidder | Invited |
-| 4  | `mn1qpreprod0000000000000000000000000000000000000000000000000004` | Bidder | Invited |
-| 5  | `mn1qpreprod0000000000000000000000000000000000000000000000000005` | Bidder | Invited |
-| 6  | `mn1qpreprod0000000000000000000000000000000000000000000000000006` | Bidder | Invited |
-| 7  | `mn1qpreprod0000000000000000000000000000000000000000000000000007` | Bidder | Invited |
-| 8  | `mn1qpreprod0000000000000000000000000000000000000000000000000008` | Bidder | Invited |
-| 9  | `mn1qpreprod0000000000000000000000000000000000000000000000000009` | Bidder | Invited |
-| 10 | `mn1qpreprod0000000000000000000000000000000000000000000000000010` | Bidder | Invited |
-| 11 | `mn1qpreprod0000000000000000000000000000000000000000000000000011` | Organizer | Invited |
-| 12 | `mn1qpreprod0000000000000000000000000000000000000000000000000012` | Bidder | Invited |
-| 13 | `mn1qpreprod0000000000000000000000000000000000000000000000000013` | Bidder | Invited |
-| 14 | `mn1qpreprod0000000000000000000000000000000000000000000000000014` | Bidder | Invited |
-| 15 | `mn1qpreprod0000000000000000000000000000000000000000000000000015` | Bidder | Invited |
-| 16 | `mn1qpreprod0000000000000000000000000000000000000000000000000016` | Bidder | Invited |
-| 17 | `mn1qpreprod0000000000000000000000000000000000000000000000000017` | Bidder | Invited |
-| 18 | `mn1qpreprod0000000000000000000000000000000000000000000000000018` | Bidder | Invited |
-| 19 | `mn1qpreprod0000000000000000000000000000000000000000000000000019` | Bidder | Invited |
-| 20 | `mn1qpreprod0000000000000000000000000000000000000000000000000020` | Bidder | Invited |
-
----
-
-## Onboarding Steps for Each User
-
-1. Send the user the auction URL: `https://aegis-procure.vercel.app/bid/[auctionId]`
-2. Direct them to install [Lace wallet](https://www.lace.io/) and switch to Preprod
-3. Share the [Midnight faucet](https://faucet.midnight.network) link for tDUST
-4. Walk them through the `docs/ONBOARDING_SCRIPT.md` call script
-5. Confirm their commitment transaction appears on the Preprod explorer
-
----
-
-## Notes
-
-- All addresses are Midnight Preprod testnet addresses (not mainnet)
-- Replace placeholder addresses with real wallet addresses before launch
-- Minimum 1 organizer + 2 bidders required for a valid auction test
+> Replace each `<<PREPROD_USER_WALLET_n>>` with a real verified Preprod wallet address and fill the onboarding date as you onboard users.
