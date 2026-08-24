@@ -1,30 +1,31 @@
-# Level 6 Users — Preprod
+# Level 6 Users — Preview
 
-Target: 20 verified wallet addresses
+Target: 20 verified wallet addresses (Preview network).
+This table is populated as users onboard. Onboarding steps: see docs/ONBOARDING_SCRIPT.md. Each user creates a wallet, funds it on the Preview faucet, performs an action, and sends their shielded address.
 
 | # | Wallet Address | Date Onboarded |
 |---|----------------|----------------|
-| 1 | <<PREPROD_USER_WALLET_1>> | <<DATE>> |
-| 2 | <<PREPROD_USER_WALLET_2>> | <<DATE>> |
-| 3 | <<PREPROD_USER_WALLET_3>> | <<DATE>> |
-| 4 | <<PREPROD_USER_WALLET_4>> | <<DATE>> |
-| 5 | <<PREPROD_USER_WALLET_5>> | <<DATE>> |
-| 6 | <<PREPROD_USER_WALLET_6>> | <<DATE>> |
-| 7 | <<PREPROD_USER_WALLET_7>> | <<DATE>> |
-| 8 | <<PREPROD_USER_WALLET_8>> | <<DATE>> |
-| 9 | <<PREPROD_USER_WALLET_9>> | <<DATE>> |
-| 10 | <<PREPROD_USER_WALLET_10>> | <<DATE>> |
-| 11 | <<PREPROD_USER_WALLET_11>> | <<DATE>> |
-| 12 | <<PREPROD_USER_WALLET_12>> | <<DATE>> |
-| 13 | <<PREPROD_USER_WALLET_13>> | <<DATE>> |
-| 14 | <<PREPROD_USER_WALLET_14>> | <<DATE>> |
-| 15 | <<PREPROD_USER_WALLET_15>> | <<DATE>> |
-| 16 | <<PREPROD_USER_WALLET_16>> | <<DATE>> |
-| 17 | <<PREPROD_USER_WALLET_17>> | <<DATE>> |
-| 18 | <<PREPROD_USER_WALLET_18>> | <<DATE>> |
-| 19 | <<PREPROD_USER_WALLET_19>> | <<DATE>> |
-| 20 | <<PREPROD_USER_WALLET_20>> | <<DATE>> |
+| 1 | — (awaiting user) | — |
+| 2 | — (awaiting user) | — |
+| 3 | — (awaiting user) | — |
+| 4 | — (awaiting user) | — |
+| 5 | — (awaiting user) | — |
+| 6 | — (awaiting user) | — |
+| 7 | — (awaiting user) | — |
+| 8 | — (awaiting user) | — |
+| 9 | — (awaiting user) | — |
+| 10 | — (awaiting user) | — |
+| 11 | — (awaiting user) | — |
+| 12 | — (awaiting user) | — |
+| 13 | — (awaiting user) | — |
+| 14 | — (awaiting user) | — |
+| 15 | — (awaiting user) | — |
+| 16 | — (awaiting user) | — |
+| 17 | — (awaiting user) | — |
+| 18 | — (awaiting user) | — |
+| 19 | — (awaiting user) | — |
+| 20 | — (awaiting user) | — |
 
 Current count: 0 / 20
 
-> Replace each `<<PREPROD_USER_WALLET_n>>` with a real verified Preprod wallet address and fill the onboarding date as you onboard users.
+> Replace each `— (awaiting user)` with a real verified Preview wallet address and fill the onboarding date as you onboard users.
