@@ -4,7 +4,7 @@
 
 A decentralized, trustless sealed-bid reverse auction protocol for B2B and GovTech procurement, built on the [Midnight blockchain](https://midnight.network) using Compact smart contracts and ZK proofs.
 
-[![CI](https://github.com/<<GITHUB_OWNER_REPO>>/actions/workflows/ci.yml/badge.svg)](https://github.com/<<GITHUB_OWNER_REPO>>/actions/workflows/ci.yml)
+[![CI](https://github.com/sharifmdathar/AegisProcure/actions/workflows/ci.yml/badge.svg)](https://github.com/sharifmdathar/AegisProcure/actions/workflows/ci.yml)
 [![Built on Midnight](https://img.shields.io/badge/Built%20on-Midnight%20Blockchain-7c3aed)](https://midnight.network)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Tests](https://img.shields.io/badge/Tests-6%20passing-brightgreen)](contract/src/test/aegis.test.ts)
