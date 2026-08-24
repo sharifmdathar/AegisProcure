@@ -21,13 +21,15 @@ Aegis Procure is a ZK sealed-bid reverse auction protocol on the Midnight blockc
 
 ---
 
-## Getting Started on Preprod
+## Getting Started on Preview
+
+> **Note:** The contract is currently live on the Midnight **Preview** network. A Preprod deployment will follow once the Preprod network is available again.
 
 1. Install the Lace wallet browser extension.
-2. Open Lace settings and switch the network to **Preprod**.
-3. Get free test tDUST from the Preprod faucet: https://faucet.preprod.midnight.network
-4. Import / point to the Aegis Procure contract address: `<<PREPROD_CONTRACT_ADDRESS>>`
-5. Open the live demo and connect your Lace (Preprod) wallet.
+2. Open Lace settings and switch the network to **Preview**.
+3. Get free test tDUST from the Preview faucet: https://faucet.preview.midnight.network
+4. Import / point to the Aegis Procure contract address: `f3f925b30c5ea1ac029f651f6f3738494a5031f1d9fe4d829ab99ab0cff4c871`
+5. Open the live demo and connect your Lace (Preview) wallet.
 
 ---
 
