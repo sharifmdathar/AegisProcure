@@ -1,27 +1,24 @@
 import Link from "next/link";
+import { fetchAuctionResult } from "@/lib/contract";
 
 // In production this would fetch from the Midnight node via midnight-js SDK
-async function getAuctionResult(id: string) {
-  // Simulated finalized auction state
-  // Only winner and winningPrice are ever disclosed — no losing bids
-  return {
-    id,
-    title: "Office Supplies Q3 2025",
-    auctionActive: false,
-    deadline: 1_700_000_000,
-    winner: "b".repeat(64),
-    winningPrice: 45_000,
-    totalBidders: 7, // count only — individual amounts stay private
-    finalizedAt: 1_700_001_200,
-  };
-}
+export type AuctionResult = {
+  id: string;
+  title: string;
+  auctionActive: boolean;
+  deadline: number;
+  winner: string;
+  winningPrice: number;
+  totalBidders: number;
+  finalizedAt: number;
+};
 
 export default async function ResultsPage({
   params,
 }: {
   params: { id: string };
 }) {
-  const result = await getAuctionResult(params.id);
+  const result = await fetchAuctionResult(params.id);
 
   return (
     <div className="max-w-2xl mx-auto px-6 py-16">

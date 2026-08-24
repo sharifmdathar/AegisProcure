@@ -1,20 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { createHash, randomBytes } from "crypto";
+import { useRouter } from "next/navigation";
+import { initContract, commitBid, revealBid } from "@/lib/contract";
 
 type Phase = "commit" | "reveal" | "done";
 
-function computeCommitment(bidAmount: bigint, salt: string): string {
-  const amountBuf = Buffer.alloc(8);
-  amountBuf.writeBigUInt64BE(bidAmount);
-  const saltBuf = Buffer.from(salt, "hex");
-  return createHash("sha256")
-    .update(Buffer.concat([amountBuf, saltBuf]))
-    .digest("hex");
-}
-
 export default function BidPage({ params }: { params: { id: string } }) {
+  const router = useRouter();
   const [phase, setPhase] = useState<Phase>("commit");
   const [bidAmount, setBidAmount] = useState("");
   const [salt, setSalt] = useState<string>("");
@@ -24,7 +17,15 @@ export default function BidPage({ params }: { params: { id: string } }) {
   const [txHash, setTxHash] = useState<string | null>(null);
 
   function generateSalt(): string {
-    return randomBytes(32).toString("hex");
+    const bytes = new Uint8Array(32);
+    if (typeof crypto !== "undefined" && crypto.getRandomValues) {
+      crypto.getRandomValues(bytes);
+    } else {
+      for (let i = 0; i < 32; i++) {
+        bytes[i] = Math.floor(Math.random() * 256);
+      }
+    }
+    return Buffer.from(bytes).toString("hex");
   }
 
   async function handleCommit(e: React.FormEvent) {
@@ -40,13 +41,11 @@ export default function BidPage({ params }: { params: { id: string } }) {
       const newSalt = generateSalt();
       setSalt(newSalt);
 
-      // Compute commitment hash client-side
-      const hash = computeCommitment(amount, newSalt);
-      setCommitment(hash);
+      // Call commitBid on the contract — only the hash is stored on-chain
+      // Raw bid amount and salt stay private; they flow through ZK witnesses
+      const commitmentHash = await commitBid(params.id, amount, newSalt);
+      setCommitment(commitmentHash);
 
-      // In production: call midnight-js SDK → commitBid(hash)
-      await new Promise((r) => setTimeout(r, 1000));
-      setTxHash("0x" + randomBytes(32).toString("hex"));
       setPhase("reveal");
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "Commit failed");
@@ -61,10 +60,11 @@ export default function BidPage({ params }: { params: { id: string } }) {
     setLoading(true);
 
     try {
-      // In production: call midnight-js SDK → revealBid()
-      // bidAmount and salt are passed as PRIVATE WITNESSES to the ZK circuit
-      // They are NEVER sent to the public ledger
-      await new Promise((r) => setTimeout(r, 1200));
+      const amount = BigInt(bidAmount);
+      // Call revealBid — bid amount and salt are private ZK witnesses
+      // They are NEVER sent to the public ledger; circuit verifies internally
+      const result = await revealBid(params.id, amount, salt);
+      setTxHash(result.success ? "revealed successfully" : "reveal failed");
       setPhase("done");
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "Reveal failed");

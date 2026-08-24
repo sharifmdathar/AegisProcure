@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { initContract, createAuction } from "@/lib/contract";
 
 export default function CreateAuctionPage() {
   const router = useRouter();
@@ -10,6 +11,7 @@ export default function CreateAuctionPage() {
   const [title, setTitle] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [auctionId, setAuctionId] = useState<string | null>(null);
 
   async function handleCreate(e: React.FormEvent) {
     e.preventDefault();
@@ -20,13 +22,12 @@ export default function CreateAuctionPage() {
       // Convert deadline datetime-local to Unix timestamp (seconds)
       const deadlineTs = Math.floor(new Date(deadline).getTime() / 1000);
 
-      // In production: call the Midnight JS SDK to deploy the contract
-      // and invoke createAuction(organizerKey, deadlineTs)
-      // For now we simulate a successful deployment
-      await new Promise((r) => setTimeout(r, 1200));
-
-      const mockAuctionId = Math.random().toString(36).slice(2, 10);
-      router.push(`/bid/${mockAuctionId}`);
+      
+      const contract = await initContract("preview");
+      const organizerKey = "placeholder-organizer-key";
+      const auction = await createAuction(organizerKey, deadlineTs);
+      setAuctionId(auction);
+      router.push(`/bid/${auction}`);
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "Failed to create auction");
     } finally {
