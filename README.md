@@ -16,11 +16,11 @@ A decentralized, trustless sealed-bid reverse auction protocol for B2B and GovTe
 
 | Network | Address |
 |---------|---------|
-| **Midnight Preprod** (primary) | `<<PREPROD_CONTRACT_ADDRESS>>` |
-| Preview | `mn1contract0aegisprocure000000000000000000000000000000000000preview` |
+| **Midnight Preview** (live) | `f3f925b30c5ea1ac029f651f6f3738494a5031f1d9fe4d829ab99ab0cff4c871` |
+| Preprod | _Pending — network unavailable at deploy time; will redeploy_ |
 | Mainnet | _Not yet deployed_ |
 
-> To interact with the contract directly, import the address into your Lace wallet (Preprod network) or use the Postman collection in `postman/`.
+> The contract is currently deployed on the **Preview** network. To interact with it directly, import the address into your Lace wallet (Preview network) or use the Postman collection in `postman/`.
 
 ---
 
@@ -34,7 +34,7 @@ Only the winning bid is revealed on-chain when the auction is finalized. Every l
 
 ## Live Demo
 
-🌐 **[aegis-procure.vercel.app](https://aegis-procure.vercel.app)** _(Preprod network)_
+🌐 **[aegis-procure.vercel.app](https://aegis-procure.vercel.app)** _(live on the Preview network)_
 
 ---
 
@@ -229,8 +229,9 @@ Brand direction and guidelines live in [`docs/BRAND_BRIEF.md`](docs/BRAND_BRIEF.
 | Brand brief | ✅ Done | `docs/BRAND_BRIEF.md` |
 | Onboarding script | ✅ Done | `docs/ONBOARDING_SCRIPT.md` |
 | Demo checklist | ✅ Done | `docs/DEMO_VIDEO_CHECKLIST.md` |
-| Contract redeployed to Preprod | ⏳ Pending | Needs real value — see `<<PREPROD_CONTRACT_ADDRESS>>` |
-| Preprod contract address in README | ⏳ Pending | Needs real value — see `<<PREPROD_CONTRACT_ADDRESS>>` |
+| Contract deployed to Preview | ✅ Done | `f3f925b30c5ea1ac029f651f6f3738494a5031f1d9fe4d829ab99ab0cff4c871` |
+| Contract redeployed to Preprod | ⏳ Pending | Preprod network unavailable at deploy time; will redeploy |
+| Contract address in README | ✅ Done (Preview) | Preprod address pending redeploy |
 | 20 users onboarded | ⏳ Pending | Needs real values — see `LAUNCH_USERS.md` |
 
 ---
