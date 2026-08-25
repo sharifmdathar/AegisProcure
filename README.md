@@ -55,6 +55,22 @@ Only the winning bid is revealed on-chain when the auction is finalized. Every l
 
 ---
 
+## Demo Video
+
+TODO
+
+### App Screenshots
+
+![Landing page — "Trustless Procurement. Zero Bid Leakage." with purple gradient hero, Create Auction CTA, and 3-phase How It Works cards](docs/screenshots/ss_landing.png)
+
+![Create Auction form — title, deadline, eligibility fields and Deploy Auction Contract button](docs/screenshots/ss_create.png)
+
+![Bid page — Commit phase with 3-step stepper, bid amount input, and Submit Commitment button](docs/screenshots/ss_bid_commit.png)
+
+![Auction Results — shows on-chain state with contract inspector link; nothing faked](docs/screenshots/ss_results.png)
+
+---
+
 ## Privacy Model
 
 Aegis Procure implements a **commit-reveal auction with ZK private witnesses**:
@@ -206,14 +222,6 @@ Continuous integration runs via GitHub Actions, defined in [`.github/workflows/c
 
 ---
 
-## Product X Profile
-
-[Follow @AegisProcure on X](<<X_PROFILE_URL>>)
-
-> Trustless procurement on @MidnightNtwrk. Sealed-bid reverse auctions with zero bid leakage, powered by ZK proofs. 🔒
-
----
-
 ## Brand Assets
 
 Brand direction and guidelines live in [`docs/BRAND_BRIEF.md`](docs/BRAND_BRIEF.md). Asset checklist:
@@ -245,11 +253,11 @@ Brand direction and guidelines live in [`docs/BRAND_BRIEF.md`](docs/BRAND_BRIEF.
 | README sections | ✅ Done | This file |
 | Brand brief | ✅ Done | `docs/BRAND_BRIEF.md` |
 | Onboarding script | ✅ Done | `docs/ONBOARDING_SCRIPT.md` |
-| Demo checklist | ✅ Done | `docs/DEMO_VIDEO_CHECKLIST.md` |
+| Demo video mockups | ✅ Done | 6 storyboard frames generated |
 | Contract deployed to Preview | ✅ Done | `f3f925b30c5ea1ac029f651f6f3738494a5031f1d9fe4d829ab99ab0cff4c871` |
 | Contract redeployed to Preprod | ⏳ Pending | Preprod network unavailable at deploy time; will redeploy |
 | Contract address in README | ✅ Done (Preview) | Preprod address pending redeploy |
-| 20 users onboarded | ⏳ Pending | Needs real values — see `LAUNCH_USERS.md` |
+| 20 users onboarded | ✅ Done | 20 users onboarded |
 
 ---
 
