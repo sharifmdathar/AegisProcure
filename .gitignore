@@ -8,8 +8,8 @@ node_modules/
 out/
 build/
 
-# Compact compiler output
-managed/
+# Compact compiler output intentionally COMMITTED:
+# server-side reads import managed/contract/index.js at build time (Vercel)
 
 # Environment
 .env*.local

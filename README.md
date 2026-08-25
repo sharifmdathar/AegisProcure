@@ -22,6 +22,23 @@ A decentralized, trustless sealed-bid reverse auction protocol for B2B and GovTe
 
 > The contract is currently deployed on the **Preview** network. To interact with it directly, import the address into your Lace wallet (Preview network) or use the Postman collection in `postman/`.
 
+### Reading chain data (results page)
+
+`/results/[id]` reads the live public ledger via the Midnight indexer and decodes
+it with the Compact-generated accessors in `managed/contract/`. The compiled
+artifacts in `managed/` are committed because server-side imports need them at
+build time.
+
+Required environment variables (see `.env.example`; preview defaults are baked
+in as fallbacks, so the app works without them locally):
+
+| Variable | Used for | Required on Vercel |
+|----------|----------|--------------------|
+| `NEXT_PUBLIC_CONTRACT_ADDRESS` | Auction contract to read | Yes (or rely on preview default) |
+| `NEXT_PUBLIC_MIDNIGHT_INDEXER_URL` | GraphQL endpoint for state reads | Yes (or rely on default) |
+| `NEXT_PUBLIC_MIDNIGHT_NETWORK` | Network label (`preview`) | Optional |
+| `NEXT_PUBLIC_MIDNIGHT_EXPLORER_URL` | Explorer links | Optional |
+
 ---
 
 ## What This Product Does
