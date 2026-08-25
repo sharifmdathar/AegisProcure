@@ -6,8 +6,8 @@
     "node": ">=22"
   },
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
+    "dev": "next dev --webpack",
+    "build": "next build --webpack",
     "start": "next start",
     "lint": "next lint",
     "test": "vitest run",
@@ -15,11 +15,13 @@
     "test:contract": "vitest run contract/src/test",
     "compact:build": "compact compile contract/aegis.compact managed",
     "compact:build:legacy": "compactc contract/aegis.compact --output managed",
-    "deploy": "tsx scripts/deploy.ts"
+    "deploy": "tsx scripts/deploy.ts",
+    "predev": "node scripts/sync-zk-assets.mjs",
+    "prebuild": "node scripts/sync-zk-assets.mjs"
   },
   "dependencies": {
     "@midnight-ntwrk/compact-runtime": "0.16.0",
-    "@midnight-ntwrk/dapp-connector-api": "^1.0.0",
+    "@midnight-ntwrk/dapp-connector-api": "^1.2.3",
     "@midnight-ntwrk/ledger-v8": "8.0.3",
     "@midnight-ntwrk/midnight-js": "^4.1.1",
     "@midnight-ntwrk/midnight-js-contracts": "4.0.4",
@@ -27,7 +29,7 @@
     "@midnight-ntwrk/midnight-js-types": "4.0.4",
     "@midnight-ntwrk/wallet": "^5.0.0",
     "@midnight-ntwrk/wallet-api": "^5.0.0",
-    "next": "14.2.5",
+    "next": "^16.3.2",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "server-only": "0.0.1"
@@ -37,18 +39,18 @@
     "@midnight-ntwrk/midnight-js-http-client-proof-provider": "4.0.4",
     "@midnight-ntwrk/midnight-js-indexer-public-data-provider": "4.0.4",
     "@midnight-ntwrk/midnight-js-level-private-state-provider": "4.0.4",
-    "@types/node": "^20",
-    "@types/react": "^18",
-    "@types/react-dom": "^18",
-    "@vitest/coverage-v8": "^1.6.0",
-    "autoprefixer": "^10.4.19",
-    "eslint": "^8",
+    "@types/node": "^20.19.43",
+    "@types/react": "^18.3.31",
+    "@types/react-dom": "^18.3.7",
+    "@vitest/coverage-v8": "^1.6.1",
+    "autoprefixer": "^10.5.4",
+    "eslint": "^8.57.1",
     "eslint-config-next": "14.2.5",
-    "postcss": "^8.4.38",
-    "puppeteer-core": "^25.8.0",
-    "tailwindcss": "^3.4.4",
-    "tsx": "^4.7.0",
-    "typescript": "^5",
-    "vitest": "^1.6.0"
+    "postcss": "^8.5.26",
+    "puppeteer-core": "^25.9.0",
+    "tailwindcss": "^3.4.19",
+    "tsx": "^4.23.12",
+    "typescript": "^5.9.3",
+    "vitest": "^1.6.1"
   }
 }

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { fetchAuctionResult, type AuctionResult } from "@/lib/auction-reads";
 import { EXPLORER_URL, ACTIVE_CONTRACT_ADDRESS } from "@/lib/contract";
+import { FinalizeAuctionButton } from "./FinalizeAuctionButton";
 
 export const dynamic = "force-dynamic";
 
@@ -47,16 +48,17 @@ const ZERO_KEY = "0".repeat(64);
 export default async function ResultsPage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
+  const { id } = await params;
   let result: Awaited<ReturnType<typeof fetchAuctionResult>>;
   try {
-    result = await fetchAuctionResult(params.id);
+    result = await fetchAuctionResult(id);
   } catch (e) {
     return (
       <div className="max-w-2xl mx-auto px-6 py-16">
         <div className="mb-2 text-xs font-mono text-gray-600">
-          Auction #{params.id}
+          Auction #{id}
         </div>
         <h1 className="text-3xl font-black text-white mb-2">Auction Results</h1>
         <p className="text-gray-400 text-sm mb-10">
@@ -81,7 +83,7 @@ export default async function ResultsPage({
   return (
     <div className="max-w-2xl mx-auto px-6 py-16">
       <div className="mb-2 text-xs font-mono text-gray-600">
-        Auction #{params.id}
+        Auction #{id}
       </div>
       <h1 className="text-3xl font-black text-white mb-2">Auction Results</h1>
       <p className="text-gray-400 text-sm mb-10">
@@ -90,7 +92,7 @@ export default async function ResultsPage({
       </p>
 
       {!result ? (
-        <NoAuctionCard id={params.id} />
+        <NoAuctionCard id={id} />
       ) : result.auctionActive ? (
         <div className="border border-yellow-800/50 bg-yellow-950/20 rounded-2xl p-8 text-center">
           <div className="text-3xl mb-3">⏳</div>
@@ -103,19 +105,22 @@ export default async function ResultsPage({
           </p>
         </div>
       ) : result.winner === ZERO_KEY ? (
-        <div className="border border-yellow-800/50 bg-yellow-950/20 rounded-2xl p-8 text-center">
-          <div className="text-3xl mb-3">🏁</div>
-          <h2 className="text-lg font-bold text-yellow-300">
-            Deadline Passed — Awaiting Finalize
-          </h2>
-          <p className="text-sm text-gray-400 mt-2">
-            {result.totalBidders} commitment
-            {result.totalBidders === 1 ? "" : "s"} are on-chain. No winner is
-            disclosed yet because{" "}
-            <code className="text-purple-300">finalizeAuction()</code> has not
-            been called.
-          </p>
-        </div>
+        <>
+          <div className="border border-yellow-800/50 bg-yellow-950/20 rounded-2xl p-8 text-center">
+            <div className="text-3xl mb-3">🏁</div>
+            <h2 className="text-lg font-bold text-yellow-300">
+              Deadline Passed — Awaiting Finalize
+            </h2>
+            <p className="text-sm text-gray-400 mt-2">
+              {result.totalBidders} commitment
+              {result.totalBidders === 1 ? "" : "s"} are on-chain. No winner is
+              disclosed yet because{" "}
+              <code className="text-purple-300">finalizeAuction()</code> has not
+              been called.
+            </p>
+          </div>
+          <FinalizeAuctionButton />
+        </>
       ) : (
         <div className="space-y-6">
           {/* Winner card */}

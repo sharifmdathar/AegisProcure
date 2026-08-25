@@ -21,28 +21,19 @@ export const INDEXER_URL =
   process.env.NEXT_PUBLIC_MIDNIGHT_INDEXER_URL ??
   "https://indexer.preview.midnight.network/api/v3/graphql";
 
+export const INDEXER_WS_URL =
+  process.env.NEXT_PUBLIC_MIDNIGHT_INDEXER_WS_URL ??
+  "wss://indexer.preview.midnight.network/api/v3/graphql/ws";
+
 export const EXPLORER_URL =
   process.env.NEXT_PUBLIC_MIDNIGHT_EXPLORER_URL ??
   "https://explorer.preview.midnight.network";
 
-// Legacy client-side stubs — wallet flows are not wired yet; do NOT mistake these for chain calls.
-export function initContract(network: "preview" | "preprod" | "mainnet" = "preview") {}
-
-export function createAuction(organizerKey: string, deadline: number) {
-  return Math.random().toString(36).slice(2, 12);
-}
-
-export function commitBid(auctionId: string, bidAmount: bigint, salt: string) {
-  return require("crypto").createHash("sha256").update(`${bidAmount}${salt}`).digest("hex");
-}
-
-export function revealBid(auctionId: string, bidAmount: bigint, salt: string) {
-  return { success: true, message: "placeholder" };
-}
-
-export function finalizeAuction(auctionId: string) {
-  return { winner: "0".repeat(64), winningPrice: 45000n };
-}
+/**
+ * The compiled contract holds a single auction — the `[id]` route segment is
+ * cosmetic (used for sharing/labels), all state lives at the address above.
+ */
+export const SINGLE_AUCTION_CONTRACT = true;
 
 export function formatBid(amount: bigint) {
   return Number(amount).toLocaleString();
