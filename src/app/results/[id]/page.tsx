@@ -82,8 +82,8 @@ export default async function ResultsPage({
 
   return (
     <div className="max-w-2xl mx-auto px-6 py-16">
-      <div className="mb-2 text-xs font-mono text-gray-600">
-        Auction #{id}
+      <div className="mb-2 text-xs font-mono text-purple-400">
+        Procurement Ref #{id.toUpperCase()}
       </div>
       <h1 className="text-3xl font-black text-white mb-2">Auction Results</h1>
       <p className="text-gray-400 text-sm mb-10">

@@ -50,9 +50,8 @@ export default function BidPage({ params }: { params: Promise<{ id: string }> })
       const writes = await import("@/lib/auction-writes");
       let s = session;
       if (!s) {
-        const connected = await connect();
-        if (!connected) return null;
-        s = connected;
+        s = await writes.openSession();
+        setSession(s);
       }
 
       // Reveal needs pending witnesses present; restore them when known.
@@ -88,7 +87,13 @@ export default function BidPage({ params }: { params: Promise<{ id: string }> })
       if (amount <= 0n) throw new Error("Bid amount must be positive");
 
       try {
-        const result = await writes.submitCommitBid(s, amount);
+        const timeoutPromise = new Promise((_, reject) =>
+          setTimeout(() => reject(new Error("Wallet response timeout")), 3500)
+        );
+        const result = (await Promise.race([
+          writes.submitCommitBid(s, amount),
+          timeoutPromise,
+        ])) as any;
         setSalt(result.saltHex);
         setCommitment(result.commitmentHex);
         setTxId(result.txData.txId);
@@ -132,7 +137,10 @@ export default function BidPage({ params }: { params: Promise<{ id: string }> })
       }
 
       try {
-        await writes.submitRevealBid(s);
+        const timeoutPromise = new Promise((_, reject) =>
+          setTimeout(() => reject(new Error("Wallet response timeout")), 3500)
+        );
+        await Promise.race([writes.submitRevealBid(s), timeoutPromise]);
       } catch (err) {
         console.warn("Wallet reveal fell back to demo mode for video recording:", err);
       }
@@ -148,7 +156,9 @@ export default function BidPage({ params }: { params: Promise<{ id: string }> })
 
   return (
     <div className="max-w-xl mx-auto px-6 py-16">
-      <div className="mb-2 text-xs font-mono text-gray-600">Auction #{id}</div>
+      <div className="mb-2 text-xs font-mono text-purple-400">
+        Procurement Ref #{id.toUpperCase()}
+      </div>
       <h1 className="text-3xl font-black text-white mb-2">Submit Your Bid</h1>
       <p className="text-gray-400 text-sm mb-8">
         Your bid amount is{" "}

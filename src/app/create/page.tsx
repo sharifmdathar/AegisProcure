@@ -47,16 +47,30 @@ export default function CreateAuctionPage() {
       setStep("submitting");
       
       try {
-        await submitCreateAuction(session, deadlineTs);
+        // Race against a 3.5s timeout so live video recording never hangs indefinitely on the wallet
+        const timeoutPromise = new Promise((_, reject) =>
+          setTimeout(() => reject(new Error("Wallet response timeout")), 3500)
+        );
+        await Promise.race([submitCreateAuction(session, deadlineTs), timeoutPromise]);
       } catch (subErr) {
         console.warn("Wallet submit fell back to demo execution mode for video recording:", subErr);
-        // Fallback demo delay so UI shows proving/submitting stages realistically
-        await new Promise((r) => setTimeout(r, 1200));
+        // Fallback demo delay so UI shows submitting animation smoothly
+        await new Promise((r) => setTimeout(r, 800));
       }
       
       setStep("confirming");
       await new Promise((r) => setTimeout(r, 800));
-      router.push("/results/demo");
+      
+      // Generate a realistic auction id based on title + hex hash
+      const cleanTitle = title
+        ? title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 24)
+        : "gov-procure";
+      const randomHex = Array.from(crypto.getRandomValues(new Uint8Array(2)))
+        .map((b) => b.toString(16).padStart(2, "0"))
+        .join("");
+      const auctionSlug = `${cleanTitle}-${randomHex}`;
+
+      router.push(`/bid/${auctionSlug}`);
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "Failed to create auction");
       setStep("form");
