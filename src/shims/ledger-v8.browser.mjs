@@ -14,9 +14,11 @@
  *
  * Server builds keep the package's Node entry and are unaffected.
  */
-import * as bg from "../../node_modules/@midnight-ntwrk/ledger-v8/midnight_ledger_wasm_bg.js";
+// Use compact-js's nested ledger-v8 (8.1.1) so all SDK components share the same WASM binary.
+// The top-level ledger-v8 is 8.0.3 which has incompatible serialization with compact-js's 8.1.1.
+import * as bg from "../../node_modules/@midnight-ntwrk/compact-js/node_modules/@midnight-ntwrk/ledger-v8/midnight_ledger_wasm_bg.js";
 
-export * from "../../node_modules/@midnight-ntwrk/ledger-v8/midnight_ledger_wasm_bg.js";
+export * from "../../node_modules/@midnight-ntwrk/compact-js/node_modules/@midnight-ntwrk/ledger-v8/midnight_ledger_wasm_bg.js";
 
 const WASM_URL = "/managed/wasm/midnight_ledger_wasm_bg.wasm";
 
@@ -39,9 +41,15 @@ function startInit() {
         let value;
         if (imp.module.endsWith("midnight_ledger_wasm_bg.js")) {
           value = bg[imp.name];
+        } else if (imp.module.includes("snippets")) {
+          // Snippets wrap JS classes exported by bg.js (e.g. PreTranscript_ returns bg.PreTranscript).
+          // Rust's wasm-bindgen uses this to perform type-checks (e.g. `instanceof PreTranscript`).
+          const className = imp.name.endsWith("_") ? imp.name.slice(0, -1) : imp.name;
+          const targetClass = bg[className];
+          value = function snippetExport() {
+            return targetClass;
+          };
         } else {
-          // Snippet namespaces wrap plain WASM exports; bind lazily — the
-          // import value must exist before instantiation, the export only after.
           value = function lazyWasmExport() {
             return instance.exports[imp.name];
           };

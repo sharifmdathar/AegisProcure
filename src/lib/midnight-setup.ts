@@ -18,7 +18,6 @@
  */
 import { CompiledContract } from "@midnight-ntwrk/compact-js";
 import type { WitnessContext } from "@midnight-ntwrk/compact-runtime";
-import { Transaction as LedgerTransaction } from "@midnight-ntwrk/ledger-v8";
 import {
   findDeployedContract,
   type FoundContract,
@@ -41,6 +40,7 @@ import {
   NetworkId as ZswapNetworkId,
   Transaction as ZswapTransaction,
 } from "@midnight-ntwrk/zswap";
+import { Transaction as LedgerTransaction } from "@midnight-ntwrk/ledger-v8";
 import { whenLedgerReady } from "../shims/ledger-v8.browser.mjs";
 import { ACTIVE_CONTRACT_ADDRESS, INDEXER_URL, INDEXER_WS_URL, MIDNIGHT_NETWORK } from "./contract";
 import { Contract, type Ledger } from "../../managed/contract/index.js";
@@ -136,22 +136,34 @@ function connectorMajor(apiVersion: string): number | null {
 }
 
 function pickConnector(): DAppConnectorAPI | undefined {
-  const registry = (window as Window & { midnight?: Record<string, DAppConnectorAPI> }).midnight;
-  if (!registry) return undefined;
-  return Object.values(registry).find(
-    (candidate): candidate is DAppConnectorAPI => {
-      if (
-        !candidate ||
-        typeof candidate !== "object" ||
-        typeof candidate.apiVersion !== "string" ||
-        typeof candidate.enable !== "function"
-      ) {
-        return false;
+  if (typeof window === "undefined") return undefined;
+  const win = window as any;
+  const registry = win.midnight;
+  if (!registry || typeof registry !== "object") return undefined;
+
+  for (const key of Object.keys(registry)) {
+    const candidate = registry[key];
+    if (candidate && typeof candidate === "object") {
+      // Lace uses enable(), 1AM uses connect()
+      if (typeof candidate.enable === "function") {
+        return candidate as DAppConnectorAPI;
       }
-      const major = connectorMajor(candidate.apiVersion);
-      return major !== null && SUPPORTED_CONNECTOR_MAJORS.has(major);
-    },
-  );
+      if (typeof candidate.connect === "function") {
+        return new Proxy(candidate, {
+          get(target, prop, receiver) {
+            if (prop === "enable") return target.connect.bind(target);
+            return Reflect.get(target, prop, receiver);
+          }
+        }) as DAppConnectorAPI;
+      }
+    }
+  }
+
+  if (typeof registry.enable === "function" || typeof registry.connect === "function") {
+    return registry as DAppConnectorAPI;
+  }
+
+  return undefined;
 }
 
 async function waitForConnector(timeoutMs = 10000): Promise<DAppConnectorAPI> {
@@ -161,21 +173,81 @@ async function waitForConnector(timeoutMs = 10000): Promise<DAppConnectorAPI> {
     if (found) return found;
     if (Date.now() >= deadline) {
       throw new Error(
-        "Could not find Midnight Lace wallet. Is the extension installed and on the same network?",
+        `Could not find Midnight wallet (Lace / 1AM). Make sure the extension is enabled in this window and refresh.`,
       );
     }
     await new Promise((resolve) => setTimeout(resolve, 100));
   }
 }
 
-/** Detects Lace and requests account access (shows the extension popup). */
+import { bech32m } from "bech32";
+
+/** Detects a Midnight wallet (Lace/1AM) and requests account access. */
 export async function connectLace(): Promise<LaceSession> {
   const connector = await waitForConnector();
-  const wallet = await connector.enable();
-  const [uris, state] = await Promise.all([connector.serviceUriConfig(), wallet.state()]);
+  const rawWallet = await connector.enable();
+  
+  // Wrap 1AM to look like Lace if 'state' is missing
+  let wallet = rawWallet;
+  let uris;
+  
+  if (typeof wallet.state !== "function") {
+    // 1AM Wallet logic
+    const shield = await (wallet as any).getShieldedAddresses();
+    const unshield = await (wallet as any).getUnshieldedAddress();
+    const conf = await (wallet as any).getConfiguration();
+    
+    uris = {
+      proverServerUri: conf.proverServerUri,
+      indexerWsUri: conf.indexerWsUri,
+      indexerUri: conf.indexerUri ?? "",
+      substrateNodeUri: conf.substrateNodeUri ?? "",
+    };
+    
+    // Normalize Bech32m keys to hex for compatibility with the Midnight SDK
+    const decodeHex = (str: string) => {
+      if (str.startsWith("mn_shield")) {
+        const decoded = bech32m.decode(str, 150);
+        const buf = Buffer.from(bech32m.fromWords(decoded.words));
+        return buf.toString("hex");
+      }
+      return str; // If already hex
+    };
+
+    wallet = {
+      state: async () => ({
+        address: unshield.unshieldedAddress,
+        coinPublicKey: decodeHex(shield.shieldedCoinPublicKey),
+        encryptionPublicKey: decodeHex(shield.shieldedEncryptionPublicKey),
+      }),
+      // The tx coming in from compact-js is already proved (UnboundTransaction = Transaction<Sig,Proof,PreBinding>)
+      // Use balanceSealedTransaction (proved+sealed) not balanceUnsealedTransaction (unproved)
+      balanceAndProveTransaction: async (tx: any, newCoins: any) => {
+        try {
+          return await (rawWallet as any).balanceSealedTransaction(tx);
+        } catch {
+          // fallback for wallets that don't distinguish sealed/unsealed
+          return await (rawWallet as any).balanceUnsealedTransaction(tx);
+        }
+      },
+      submitTransaction: (tx: any) => (rawWallet as any).submitTransaction(tx),
+    } as any;
+  } else {
+    uris = typeof connector.serviceUriConfig === "function"
+      ? await connector.serviceUriConfig()
+      : {
+          proverServerUri: "http://127.0.0.1:6300",
+          indexerUri: "",
+          indexerWsUri: "",
+          substrateNodeUri: "",
+        };
+  }
+
+  const state = await wallet.state();
+
   setNetworkId(MIDNIGHT_NETWORK);
   return {
-    connectorName: connector.name,
+    connectorName: connector.name || "Midnight Wallet",
     wallet,
     uris,
     address: state.address,
@@ -205,6 +277,9 @@ function zswapNetworkId(network: string): ZswapNetworkId {
  */
 export async function buildProviders(session: LaceSession): Promise<AegisProviders> {
   setNetworkId(MIDNIGHT_NETWORK);
+
+  // Ensure the ledger WASM is fully instantiated before any Transaction calls.
+  await whenLedgerReady();
 
   // Imported lazily: the level package probes for a native build at require
   // time, which must never happen while Next.js SSR-evaluates this module.
@@ -241,17 +316,54 @@ export async function buildProviders(session: LaceSession): Promise<AegisProvide
       getCoinPublicKey: () => session.coinPublicKey,
       getEncryptionPublicKey: () => session.encryptionPublicKey,
       balanceTx: async (tx) => {
-        const rawUnbound = tx.serialize();
-        const forLace = ZswapTransaction.deserialize(rawUnbound, netId);
-        const balanced = await session.wallet.balanceAndProveTransaction(forLace, []);
-        const rawFinal = balanced.serialize(netId);
-        return LedgerTransaction.deserialize("signature", "proof", "binding", rawFinal);
+        let forWallet: any = tx;
+        try {
+          // For Lace: expects ZswapTransaction
+          const rawUnbound = tx.serialize();
+          forWallet = ZswapTransaction.deserialize(rawUnbound, netId);
+        } catch {
+          // Keep raw tx if conversion not needed
+        }
+
+        const balanced = await session.wallet.balanceAndProveTransaction(forWallet, []);
+        
+        // Handle both Uint8Array / serialized return and object return
+        if (balanced instanceof Uint8Array) {
+          return LedgerTransaction.deserialize("signature", "proof", "binding", balanced);
+        }
+        if (typeof balanced?.serialize === "function") {
+          try {
+            const bytes = balanced.serialize(netId);
+            return LedgerTransaction.deserialize("signature", "proof", "binding", bytes);
+          } catch {
+            const bytes = (balanced as any).serialize(netId as any);
+            return LedgerTransaction.deserialize("signature", "proof", "binding", bytes);
+          }
+        }
+        return balanced as any;
       },
     },
     midnightProvider: {
       submitTx: async (tx) => {
-        const forLace = ZswapTransaction.deserialize(tx.serialize(), netId);
-        await session.wallet.submitTransaction(forLace);
+        // Try both formats for Lace / 1AM
+        let submissionTarget: any = tx;
+        try {
+          submissionTarget = ZswapTransaction.deserialize(tx.serialize(), netId);
+        } catch {
+          submissionTarget = tx;
+        }
+
+        try {
+          await session.wallet.submitTransaction(submissionTarget);
+        } catch (e: any) {
+          // Fallback to submitting raw tx if zswap wrapper was rejected
+          if (submissionTarget !== tx) {
+            await session.wallet.submitTransaction(tx as any);
+          } else {
+            throw e;
+          }
+        }
+
         const identifiers = tx.identifiers();
         if (identifiers.length === 0) throw new Error("Transaction produced no identifiers");
         return identifiers[0];

@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none">
+  <rect width="32" height="32" rx="6" fill="#030712"/>
+  <!-- Aegis Shield Outline -->
+  <path d="M16 4L6 8V16C6 22 10.5 26.5 16 28C21.5 26.5 26 22 26 16V8L16 4Z" stroke="#7c3aed" stroke-width="2" stroke-linejoin="round" fill="#111827"/>
+  <!-- Lock Shackle -->
+  <path d="M12.5 14V11.5C12.5 9.5 14 8 16 8C18 8 19.5 9.5 19.5 11.5V14" stroke="#38bdf8" stroke-width="1.8" stroke-linecap="round"/>
+  <!-- Lock Body -->
+  <rect x="11" y="13.5" width="10" height="8" rx="2" fill="#7c3aed" stroke="#a855f7" stroke-width="1.2"/>
+  <!-- Keyhole -->
+  <circle cx="16" cy="17" r="1.2" fill="#030712"/>
+  <path d="M15.4 17.5L14.8 20H17.2L16.6 17.5" fill="#030712"/>
+</svg>

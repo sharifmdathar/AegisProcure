@@ -17,6 +17,7 @@ import {
 } from "@midnight-ntwrk/compact-runtime";
 import type { FinalizedTxData } from "@midnight-ntwrk/midnight-js-types";
 import { hexToBytes } from "./auction-hex";
+export { hexToBytes };
 import {
   freshPrivateState,
   openAuctionSession,
@@ -130,6 +131,8 @@ export function markBidRevealed(amount: bigint): void {
     // Non-fatal: finalize will require an explicit winning price instead.
   }
 }
+
+
 
 export function toHex(bytes: Uint8Array): string {
   return Array.from(bytes)

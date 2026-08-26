@@ -2,8 +2,10 @@ import path from "node:path";
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Turbopack is enabled by default in Next.js 16; silence build error
+  turbopack: {},
   // Midnight JS SDK uses Node.js crypto — polyfill for browser bundles
-  webpack: (config, { isServer }) => {
+  webpack: (config, { isServer, webpack }) => {
     // @midnight-ntwrk/compact-runtime ships a malformed exports map
     // ("default" before "types"); webpack rejects it. Alias straight to the
     // dist entry so the exports field is bypassed.
@@ -23,12 +25,12 @@ const nextConfig = {
       type: "webassembly/async",
     });
     if (!isServer) {
-      // webpack's @webassemblyjs parser cannot parse the modern rustc WASM
-      // binaries shipped by the Midnight SDK, so the browser gets shims that
-      // instantiate the binaries at runtime (see src/shims/*.browser.mjs).
-      config.resolve.alias["@midnight-ntwrk/ledger-v8"] = path.resolve(
-        "src/shims/ledger-v8.browser.mjs"
-      );
+      const ledgerShim = path.resolve("src/shims/ledger-v8.browser.mjs");
+      
+      // Alias all variations of ledger-v8 module resolution to our browser shim
+      config.resolve.alias["@midnight-ntwrk/ledger-v8$"] = ledgerShim;
+      config.resolve.alias["@midnight-ntwrk/ledger-v8"] = ledgerShim;
+
       config.resolve.alias["@midnight-ntwrk/onchain-runtime-v3"] = path.resolve(
         "src/shims/onchain-runtime-v3.browser.mjs"
       );

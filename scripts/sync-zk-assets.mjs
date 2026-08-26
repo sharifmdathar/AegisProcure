@@ -37,14 +37,17 @@ for (const dir of ["keys", "zkir"]) {
 // embedded like the smaller onchain runtime).
 const wasmDir = join(ROOT, "public", "managed", "wasm");
 mkdirSync(wasmDir, { recursive: true });
-const LEDGER_BIN = readdirSync(join(ROOT, "node_modules", "@midnight-ntwrk", "ledger-v8")).find(
+// Use compact-js's nested ledger-v8 (8.1.1) — matches our browser shim and avoids
+// cross-version serialization incompatibilities with the top-level 8.0.3 package.
+const LEDGER_V8_DIR = join(ROOT, "node_modules", "@midnight-ntwrk", "compact-js", "node_modules", "@midnight-ntwrk", "ledger-v8");
+const LEDGER_BIN = readdirSync(LEDGER_V8_DIR).find(
   (f) => f.endsWith(".wasm")
 );
 cpSync(
-  join(ROOT, "node_modules", "@midnight-ntwrk", "ledger-v8", LEDGER_BIN),
+  join(LEDGER_V8_DIR, LEDGER_BIN),
   join(wasmDir, LEDGER_BIN)
 );
-console.log(`sync-zk-assets: public/managed/wasm/${LEDGER_BIN}`);
+console.log(`sync-zk-assets: public/managed/wasm/${LEDGER_BIN} (from compact-js/ledger-v8@8.1.1)`);
 
 // Onchain runtime is small enough to embed and instantiate synchronously in
 // the browser shim (src/shims/onchain-runtime-v3.browser.mjs), which imports

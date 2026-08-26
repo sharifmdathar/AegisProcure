@@ -224,13 +224,20 @@ Continuous integration runs via GitHub Actions, defined in [`.github/workflows/c
 
 ## Brand Assets
 
-Brand direction and guidelines live in [`docs/BRAND_BRIEF.md`](docs/BRAND_BRIEF.md). Asset checklist:
+Brand direction and guidelines live in [`docs/BRAND_BRIEF.md`](docs/BRAND_BRIEF.md). Asset directory: [`docs/brand/`](docs/brand/)
 
-- [ ] Logo
-- [ ] Favicon
-- [ ] OG image (1200×630)
-- [ ] X banner (1500×500)
-- [ ] Demo thumbnail
+- [x] **Logo (1024×1024):** [`docs/brand/logo.png`](docs/brand/logo.png)
+- [x] **Favicon (SVG):** [`docs/brand/favicon.svg`](docs/brand/favicon.svg) / [`public/favicon.svg`](public/favicon.svg)
+- [x] **OG Image (1200×630):** [`docs/brand/og-image.png`](docs/brand/og-image.png)
+- [x] **X Banner (1500×500):** [`docs/brand/x-banner.png`](docs/brand/x-banner.png)
+- [x] **Demo Thumbnail (1280×720):** [`docs/brand/demo-thumbnail.png`](docs/brand/demo-thumbnail.png)
+
+| Asset | Preview |
+|-------|---------|
+| **Logo** | ![Aegis Logo](docs/brand/logo.png) |
+| **OG Image** | ![OG Image](docs/brand/og-image.png) |
+| **X Banner** | ![X Banner](docs/brand/x-banner.png) |
+| **Demo Thumbnail** | ![Demo Thumbnail](docs/brand/demo-thumbnail.png) |
 
 ---
 
