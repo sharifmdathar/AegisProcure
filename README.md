@@ -55,19 +55,19 @@ Only the winning bid is revealed on-chain when the auction is finalized. Every l
 
 ---
 
-## Demo Video
+## App Screenshots
 
-TODO
+### Landing Page
+![Landing page](docs/screenshots/ss_landing.png)
 
-### App Screenshots
+### Create Auction
+![Create Auction form](docs/screenshots/ss_create.png)
 
-![Landing page — "Trustless Procurement. Zero Bid Leakage." with purple gradient hero, Create Auction CTA, and 3-phase How It Works cards](docs/screenshots/ss_landing.png)
+### Bid Page
+![Bid page — Commit phase](docs/screenshots/ss_bid_commit.png)
 
-![Create Auction form — title, deadline, eligibility fields and Deploy Auction Contract button](docs/screenshots/ss_create.png)
-
-![Bid page — Commit phase with 3-step stepper, bid amount input, and Submit Commitment button](docs/screenshots/ss_bid_commit.png)
-
-![Auction Results — shows on-chain state with contract inspector link; nothing faked](docs/screenshots/ss_results.png)
+### Auction Results
+![Auction Results](docs/screenshots/ss_results.png)
 
 ---
 
